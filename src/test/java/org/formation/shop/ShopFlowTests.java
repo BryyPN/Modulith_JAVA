@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -26,7 +27,8 @@ class ShopFlowTests {
         Long coffeeId = catalog.createCoffee("Espresso", 10);
 
         assertThat(coffeeRepository.findById(coffeeId)).isPresent();
-        assertThat(stockRepository.findAll())
-                .anyMatch(stock -> stock.getCoffeeId().equals(coffeeId) && stock.getQuantity() == 0);
+        await().untilAsserted(() -> assertThat(stockRepository.findAll())
+                .anyMatch(stock -> stock.getCoffeeId().equals(coffeeId)
+                        && stock.getQuantity() == 0));
     }
 }
